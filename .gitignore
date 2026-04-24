@@ -1,0 +1,13 @@
+# Sistemas
+*.exe
+*.lnk
+*.url
+*.zip
+*.msi
+
+# Windows
+desktop.ini
+
+# Carpetas basura
+images/games/
+imagenes/
