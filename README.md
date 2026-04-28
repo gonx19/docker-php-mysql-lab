@@ -42,7 +42,14 @@ Ambos servicios se comunican a través de una red interna de Docker definida en 
 
 ## 🧪 Cómo ejecutar el proyecto
 
+### Desarrollo
 ```bash
-git clone git@github.com:gonx19/docker-php-mysql-lab.git
-cd docker-php-mysql-lab
-docker compose up -d --build
+docker compose -f docker-compose.dev.yml up -d --build
+```
+Accede en: http://localhost:8080
+
+### Producción
+```bash
+docker compose -f docker-compose.prod.yml up -d --build
+```
+Accede en: http://localhost:80
