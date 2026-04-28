@@ -1,25 +1,40 @@
 services:
   app:
     build: .
-    container_name: app
+    container_name: php_app
     ports:
       - "8080:80"
     volumes:
       - ./web:/var/www/html
     depends_on:
-      - mysql
+      db:
+        condition: service_healthy
+    networks:
+      - backend
+    restart: unless-stopped
 
-  mysql:
-    image: mysql:8
-    container_name: mysql
-    restart: always
+  db:
+    image: mysql:8.0
+    container_name: mysql_db
+    restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: root123
-      MYSQL_DATABASE: prueba
-      MYSQL_USER: usuario
-      MYSQL_PASSWORD: usuario123
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - db_data:/var/lib/mysql
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+networks:
+  backend:
+    driver: bridge
 
 volumes:
   db_data:
