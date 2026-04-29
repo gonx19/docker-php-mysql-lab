@@ -18,4 +18,4 @@ RUN docker-php-ext-install mysqli
 
 COPY --from=development /var/www/html /var/www/html
 
-RUN sed -i 's/Options Indexes/Options -Indexes/' /etc/apache2/apache2.conf
+
