@@ -1,46 +1,35 @@
-# 🐳 Entorno Docker con PHP y MySQL
+# 🐳 Infraestructura web containerizada con Docker, Kubernetes y CI/CD
 
 ## 📌 Descripción
-
-Proyecto de entorno de aplicación web containerizado utilizando Docker.  
-Simula una arquitectura backend básica compuesta por una aplicación en PHP y una base de datos MySQL comunicadas mediante red interna.
-
-Este proyecto ha sido desarrollado como práctica de administración de sistemas y despliegue de servicios en contenedores.
+Proyecto de infraestructura web containerizada con PHP y MySQL, evolucionada
+progresivamente desde un entorno básico hasta un pipeline CI/CD completo
+con Kubernetes y monitorización con Prometheus y Grafana.
 
 ---
 
 ## ⚙️ Arquitectura
 
-El entorno está compuesto por dos servicios principales:
-
-- **app (PHP + Apache)**
-- **mysql (MySQL 8)**
-
-Ambos servicios se comunican a través de una red interna de Docker definida en `docker-compose.yml`.
+- **app (PHP 8.2 + Apache)** — 2 réplicas en Kubernetes
+- **mysql (MySQL 8)** — con healthcheck y persistencia
+- **Prometheus + Grafana** — monitorización del cluster con Helm
+- **GitHub Actions** — CI/CD automatizado hacia Docker Hub
 
 ---
 
 ## 🧰 Tecnologías utilizadas
 
-- Docker
-- Docker Compose
+- Docker y Docker Compose
+- Kubernetes (minikube)
+- Helm
+- GitHub Actions
+- Prometheus + Grafana
 - PHP 8.2 (Apache)
 - MySQL 8
 - Linux (Ubuntu Server)
 
 ---
 
-## 🚀 Funcionalidades
-
-- Despliegue automatizado con Docker Compose
-- Comunicación entre contenedores en red interna
-- Conexión de PHP con MySQL mediante mysqli
-- Persistencia de datos mediante volúmenes Docker
-- Imagen personalizada de PHP con extensión MySQL habilitada
-
----
-
-## 🧪 Cómo ejecutar el proyecto
+## 🚀 Cómo ejecutar el proyecto
 
 ### Desarrollo
 ```bash
@@ -53,3 +42,52 @@ Accede en: http://localhost:8080
 docker compose -f docker-compose.prod.yml up -d --build
 ```
 Accede en: http://localhost:80
+
+---
+
+## ☸️ Despliegue en Kubernetes
+
+```bash
+minikube start
+kubectl apply -f k8s/
+kubectl get pods
+```
+
+Accede a la app:
+```bash
+minikube service app-service --url
+```
+
+---
+
+## 📊 Monitorización con Prometheus y Grafana
+
+```bash
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+helm install monitoring prometheus-community/kube-prometheus-stack \
+  --namespace monitoring --create-namespace
+```
+
+Obtén la contraseña de Grafana:
+```bash
+kubectl --namespace monitoring get secrets monitoring-grafana \
+  -o jsonpath="{.data.admin-password}" | base64 -d ; echo
+```
+
+Accede a Grafana:
+```bash
+kubectl --namespace monitoring port-forward service/monitoring-grafana \
+  3000:80 --address 0.0.0.0
+```
+Abre: http://localhost:3000 — usuario: `admin`
+
+---
+
+## 🔄 CI/CD
+
+Cada `git push` a `main` dispara automáticamente GitHub Actions:
+1. Build de la imagen de producción
+2. Push a Docker Hub
+
+imagen pública: [hub.docker.com/r/gonx19/docker-php-mysql-lab](https://hub.docker.com/r/gonx19/docker-php-mysql-lab)
