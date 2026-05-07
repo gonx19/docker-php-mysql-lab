@@ -40,5 +40,6 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           script: |
             cd docker-php-mysql-lab
+            git pull origin main
             docker compose -f docker-compose.prod.yml pull
             docker compose -f docker-compose.prod.yml up -d --force-recreate
